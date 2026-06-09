@@ -149,7 +149,7 @@ function renderFacets(){
 }
 
 function renderFacet(container,items,type){
-  container.innerHTML = items.length ? items.map(([name,count])=>`<button class="chip" data-type="${type}" data-name="${escapeHtml(name)}">${escapeHtml(name)} <span>${count}</span></button>`).join("") : "<p class="muted">—</p>";
+  container.innerHTML = items.length ? items.map(([name,count])=>`<button class="chip" data-type="${type}" data-name="${escapeHtml(name)}">${escapeHtml(name)} <span>${count}</span></button>`).join("") : '<p class="muted">—</p>';
 
   container.querySelectorAll(".chip").forEach(chip=>{
     chip.addEventListener("click",()=>{
