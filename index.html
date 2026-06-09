@@ -1,13 +1,9 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>DocVault</title>
-
-  <meta name="theme-color" content="#2563eb">
 
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="style.css">
@@ -15,269 +11,75 @@
 
 <body>
 
-<div class="app-layout">
+<div class="layout">
 
   <!-- SIDEBAR -->
-
   <aside class="sidebar">
 
-    <div class="logo">
-      📁 DocVault
-    </div>
+    <h1>📁 DocVault</h1>
 
-    <nav>
+    <button class="nav" data-view="all">📄 Documents</button>
+    <button class="nav" data-view="favorites">⭐ Favoris</button>
+    <button class="nav" data-view="archives">📦 Archives</button>
+    <button class="nav" data-view="due">📅 Échéances</button>
 
-      <button class="nav-btn active">
-        📄 Documents
-      </button>
+    <hr>
 
-      <button class="nav-btn">
-        ⭐ Favoris
-      </button>
-
-      <button class="nav-btn">
-        📦 Archives
-      </button>
-
-    </nav>
-
-    <div class="sidebar-footer">
-
-      <button id="themeToggle" class="nav-btn">
-        🌙 Mode sombre
-      </button>
-
-    </div>
+    <button id="themeToggle">🌙 Mode</button>
+    <button id="exportBtn">📤 Export</button>
+    <label class="import">
+      📥 Import
+      <input type="file" id="importInput" hidden>
+    </label>
 
   </aside>
 
   <!-- MAIN -->
+  <main class="main">
 
-  <main class="main-content">
-
-    <!-- HEADER -->
-
-    <header class="topbar">
-
-      <input
-        type="text"
-        id="searchInput"
-        placeholder="🔍 Rechercher un document..."
-      >
-
-      <label class="upload-btn">
-        ➕ Ajouter
-
-        <input
-          hidden
-          type="file"
-          id="fileInput"
-          accept=".pdf,image/*"
-        >
-      </label>
-
+    <header>
+      <input id="search" placeholder="Rechercher...">
+      <input type="file" id="fileInput" multiple>
     </header>
 
-    <!-- DASHBOARD -->
+    <section id="stats"></section>
 
-    <section class="dashboard">
-
-      <div class="stat-card">
-        <div class="stat-value" id="documentsCount">0</div>
-        <div class="stat-label">Documents</div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-value" id="favoritesCount">0</div>
-        <div class="stat-label">Favoris</div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-value" id="archivesCount">0</div>
-        <div class="stat-label">Archives</div>
-      </div>
-
-    </section>
-
-    <!-- FILTERS -->
-
-    <section class="filters">
-
-      <select id="categoryFilter">
-
-        <option value="">
-          Toutes les catégories
-        </option>
-
-      </select>
-
-      <button id="showFavorites">
-        ⭐ Favoris
-      </button>
-
-      <button id="showArchives">
-        📦 Archives
-      </button>
-
-    </section>
-
-    <!-- DOCUMENT LIST -->
-
-    <section
-      id="documentsList"
-      class="documents-list"
-    >
-
-      <div class="empty-state">
-
-        <div class="empty-icon">
-          📂
-        </div>
-
-        <h2>
-          Aucun document
-        </h2>
-
-        <p>
-          Ajoutez votre premier document.
-        </p>
-
-      </div>
-
-    </section>
+    <section id="list"></section>
 
   </main>
 
 </div>
 
-<!-- DOCUMENT EDITOR -->
+<!-- MODAL -->
+<dialog id="modal">
 
-<dialog id="documentModal">
+  <h2 id="mTitle"></h2>
 
-  <div class="modal-header">
+  <input id="mCategory" placeholder="Catégorie">
+  <input id="mTags" placeholder="tags (virgule)">
+  <textarea id="mSummary" placeholder="Résumé"></textarea>
+  <textarea id="mNotes" placeholder="Notes"></textarea>
 
-    <h2 id="modalTitle">
-      Document
-    </h2>
+  <input type="date" id="mDue">
 
-    <button
-      id="closeModal"
-      class="icon-btn"
-    >
-      ✕
-    </button>
+  <label>
+    ⭐ Favori <input type="checkbox" id="mFav">
+  </label>
 
-  </div>
+  <label>
+    📦 Archive <input type="checkbox" id="mArch">
+  </label>
 
-  <div class="modal-body">
+  <div id="mLinks"></div>
 
-    <label>
-
-      Titre
-
-      <input
-        type="text"
-        id="editTitle"
-      >
-
-    </label>
-
-    <label>
-
-      Catégorie
-
-      <input
-        type="text"
-        id="editCategory"
-        placeholder="Administratif"
-      >
-
-    </label>
-
-    <label>
-
-      Tags
-
-      <input
-        type="text"
-        id="editTags"
-        placeholder="important, voiture"
-      >
-
-    </label>
-
-    <label>
-
-      Résumé
-
-      <textarea
-        id="editSummary"
-        rows="4"
-      ></textarea>
-
-    </label>
-
-    <label>
-
-      Notes
-
-      <textarea
-        id="editNotes"
-        rows="6"
-      ></textarea>
-
-    </label>
-
-    <div class="checkbox-row">
-
-      <label>
-
-        <input
-          type="checkbox"
-          id="editFavorite"
-        >
-
-        Favori
-
-      </label>
-
-      <label>
-
-        <input
-          type="checkbox"
-          id="editArchived"
-        >
-
-        Archivé
-
-      </label>
-
-    </div>
-
-    <div class="modal-actions">
-
-      <button id="saveDocumentBtn">
-        💾 Enregistrer
-      </button>
-
-      <button id="openDocumentBtn">
-        📄 Ouvrir
-      </button>
-
-      <button
-        id="deleteDocumentBtn"
-        class="danger"
-      >
-        🗑 Supprimer
-      </button>
-
-    </div>
-
-  </div>
+  <button id="save">Sauvegarder</button>
+  <button id="open">Ouvrir</button>
+  <button id="delete">Supprimer</button>
 
 </dialog>
 
 <script src="db.js"></script>
+<script src="search.js"></script>
 <script src="app.js"></script>
 
 </body>
