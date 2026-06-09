@@ -1,317 +1,303 @@
-const fileInput =
-  document.getElementById("fileInput");
-
-const documentsList =
-  document.getElementById("documentsList");
-
-const searchInput =
-  document.getElementById("searchInput");
-
-const modal =
-  document.getElementById("documentModal");
-
-const modalTitle =
-  document.getElementById("modalTitle");
-
-const modalType =
-  document.getElementById("modalType");
-
-const closeModal =
-  document.getElementById("closeModal");
-
-const openDocumentBtn =
-  document.getElementById("openDocumentBtn");
-
-const deleteDocumentBtn =
-  document.getElementById("deleteDocumentBtn");
-
-const themeToggle =
-  document.getElementById("themeToggle");
-
 let documents = [];
-
 let selectedDocument = null;
 
-/* -------------------- */
-/* INIT */
-/* -------------------- */
+const fileInput = document.getElementById("fileInput");
+const searchInput = document.getElementById("searchInput");
+
+const modal = document.getElementById("documentModal");
+
+const editTitle = document.getElementById("editTitle");
+const editCategory = document.getElementById("editCategory");
+const editTags = document.getElementById("editTags");
+const editSummary = document.getElementById("editSummary");
+const editNotes = document.getElementById("editNotes");
+
+const editFavorite = document.getElementById("editFavorite");
+const editArchived = document.getElementById("editArchived");
+
+const documentsList = document.getElementById("documentsList");
+
+const documentsCount = document.getElementById("documentsCount");
+const favoritesCount = document.getElementById("favoritesCount");
+const archivesCount = document.getElementById("archivesCount");
+
+const categoryFilter = document.getElementById("categoryFilter");
+
+const saveBtn = document.getElementById("saveDocumentBtn");
+const openBtn = document.getElementById("openDocumentBtn");
+const deleteBtn = document.getElementById("deleteDocumentBtn");
+
+const closeModal = document.getElementById("closeModal");
+
+let currentFilter = {
+  search: "",
+  favorites: false,
+  archives: false,
+  category: ""
+};
+
+/* ---------------- INIT ---------------- */
 
 window.addEventListener("load", async () => {
-
   await openDB();
-
   await loadDocuments();
-
   initTheme();
-
-  registerServiceWorker();
-
+  registerSW();
 });
 
-/* -------------------- */
-/* THEME */
-/* -------------------- */
+/* ---------------- LOAD ---------------- */
 
-function initTheme() {
-
-  const savedTheme =
-    localStorage.getItem("theme");
-
-  if (savedTheme === "dark") {
-
-    document.body.classList.add("dark");
-
-    themeToggle.textContent = "☀️";
-
-  }
-
+async function loadDocuments() {
+  documents = await getAllDocuments();
+  render();
+  updateStats();
+  updateCategories();
 }
 
-themeToggle.addEventListener("click", () => {
-
-  document.body.classList.toggle("dark");
-
-  const isDark =
-    document.body.classList.contains("dark");
-
-  localStorage.setItem(
-    "theme",
-    isDark ? "dark" : "light"
-  );
-
-  themeToggle.textContent =
-    isDark ? "☀️" : "🌙";
-
-});
-
-/* -------------------- */
-/* IMPORT */
-/* -------------------- */
+/* ---------------- ADD FILE ---------------- */
 
 fileInput.addEventListener("change", async (e) => {
-
   const file = e.target.files[0];
-
   if (!file) return;
 
   const doc = {
-
     id: crypto.randomUUID(),
-
     title: file.name,
-
     type: file.type,
-
     createdAt: Date.now(),
+    file,
 
-    file
-
+    category: "",
+    tags: [],
+    summary: "",
+    notes: "",
+    favorite: false,
+    archived: false
   };
 
   await addDocument(doc);
-
   await loadDocuments();
 
   fileInput.value = "";
-
 });
 
-/* -------------------- */
-/* LOAD */
-/* -------------------- */
+/* ---------------- SEARCH ---------------- */
 
-async function loadDocuments() {
+searchInput.addEventListener("input", (e) => {
+  currentFilter.search = e.target.value;
+  render();
+});
 
-  documents =
-    await getAllDocuments();
+/* ---------------- FILTER BUTTONS ---------------- */
 
-  renderDocuments(documents);
+document.getElementById("showFavorites")
+  .addEventListener("click", () => {
+    currentFilter.favorites = !currentFilter.favorites;
+    render();
+  });
 
-}
+document.getElementById("showArchives")
+  .addEventListener("click", () => {
+    currentFilter.archives = !currentFilter.archives;
+    render();
+  });
 
-/* -------------------- */
-/* SEARCH */
-/* -------------------- */
+categoryFilter.addEventListener("change", (e) => {
+  currentFilter.category = e.target.value;
+  render();
+});
 
-searchInput.addEventListener("input", () => {
+/* ---------------- RENDER ---------------- */
 
-  const query =
-    searchInput.value.toLowerCase();
+function render() {
 
-  const filtered =
-    documents.filter(doc =>
-      doc.title
-        .toLowerCase()
-        .includes(query)
+  let list = [...documents];
+
+  if (currentFilter.favorites) {
+    list = list.filter(d => d.favorite);
+  }
+
+  if (currentFilter.archives) {
+    list = list.filter(d => d.archived);
+  } else {
+    list = list.filter(d => !d.archived);
+  }
+
+  if (currentFilter.category) {
+    list = list.filter(d =>
+      d.category === currentFilter.category
     );
+  }
 
-  renderDocuments(filtered);
+  if (currentFilter.search) {
+    list = list.filter(d => matchesSearch(d, currentFilter.search));
+  }
 
-});
-
-/* -------------------- */
-/* RENDER */
-/* -------------------- */
-
-function renderDocuments(list) {
+  list.sort((a, b) => b.createdAt - a.createdAt);
 
   if (!list.length) {
-
     documentsList.innerHTML = `
       <div class="empty-state">
         <div class="empty-icon">📂</div>
         <h2>Aucun document</h2>
-        <p>Ajoutez votre premier PDF ou image.</p>
       </div>
     `;
-
     return;
   }
 
   documentsList.innerHTML = "";
 
-  list.sort(
-    (a, b) => b.createdAt - a.createdAt
-  );
-
   list.forEach(doc => {
+    const el = document.createElement("div");
+    el.className = "document-card";
 
-    const card =
-      document.createElement("div");
-
-    card.className =
-      "document-card";
-
-    card.innerHTML = `
-      <div class="document-title">
-        ${doc.title}
-      </div>
-
+    el.innerHTML = `
+      <div class="document-title">${doc.title}</div>
       <div class="document-meta">
-        ${formatType(doc.type)}
+        ${doc.category || "Sans catégorie"}
+      </div>
+      <div class="document-tags">
+        ${(doc.tags || []).map(t => `<span class="tag">#${t}</span>`).join("")}
       </div>
     `;
 
-    card.addEventListener(
-      "click",
-      () => showDocument(doc)
-    );
+    el.onclick = () => openEditor(doc);
 
-    documentsList.appendChild(card);
-
+    documentsList.appendChild(el);
   });
-
 }
 
-/* -------------------- */
-/* DOCUMENT MODAL */
-/* -------------------- */
+/* ---------------- SEARCH ENGINE ---------------- */
 
-function showDocument(doc) {
+function matchesSearch(doc, q) {
+  const text = [
+    doc.title,
+    doc.category,
+    doc.summary,
+    doc.notes,
+    ...(doc.tags || [])
+  ].join(" ").toLowerCase();
 
+  return text.includes(q.toLowerCase());
+}
+
+/* ---------------- EDITOR ---------------- */
+
+function openEditor(doc) {
   selectedDocument = doc;
 
-  modalTitle.textContent =
-    doc.title;
-
-  modalType.textContent =
-    formatType(doc.type);
+  editTitle.value = doc.title || "";
+  editCategory.value = doc.category || "";
+  editTags.value = (doc.tags || []).join(", ");
+  editSummary.value = doc.summary || "";
+  editNotes.value = doc.notes || "";
+  editFavorite.checked = doc.favorite || false;
+  editArchived.checked = doc.archived || false;
 
   modal.showModal();
-
 }
 
-closeModal.addEventListener(
-  "click",
-  () => modal.close()
-);
+/* ---------------- SAVE ---------------- */
 
-/* -------------------- */
-/* OPEN */
-/* -------------------- */
+saveBtn.onclick = async () => {
 
-openDocumentBtn.addEventListener(
-  "click",
-  () => {
+  if (!selectedDocument) return;
 
-    if (!selectedDocument) return;
+  selectedDocument.title = editTitle.value;
+  selectedDocument.category = editCategory.value;
 
-    const url =
-      URL.createObjectURL(
-        selectedDocument.file
-      );
+  selectedDocument.tags = editTags.value
+    .split(",")
+    .map(t => t.trim())
+    .filter(Boolean);
 
-    window.open(url, "_blank");
+  selectedDocument.summary = editSummary.value;
+  selectedDocument.notes = editNotes.value;
 
+  selectedDocument.favorite = editFavorite.checked;
+  selectedDocument.archived = editArchived.checked;
+
+  await updateDocument(selectedDocument);
+
+  modal.close();
+  await loadDocuments();
+};
+
+/* ---------------- DELETE ---------------- */
+
+deleteBtn.onclick = async () => {
+  if (!selectedDocument) return;
+
+  await deleteDocument(selectedDocument.id);
+
+  modal.close();
+  await loadDocuments();
+};
+
+/* ---------------- OPEN FILE ---------------- */
+
+openBtn.onclick = () => {
+  if (!selectedDocument) return;
+
+  const url = URL.createObjectURL(selectedDocument.file);
+  window.open(url, "_blank");
+};
+
+/* ---------------- STATS ---------------- */
+
+function updateStats() {
+  documentsCount.textContent = documents.length;
+  favoritesCount.textContent =
+    documents.filter(d => d.favorite).length;
+  archivesCount.textContent =
+    documents.filter(d => d.archived).length;
+}
+
+/* ---------------- CATEGORIES ---------------- */
+
+function updateCategories() {
+  const categories = [...new Set(
+    documents.map(d => d.category).filter(Boolean)
+  )];
+
+  categoryFilter.innerHTML = `
+    <option value="">Toutes les catégories</option>
+    ${categories.map(c =>
+      `<option value="${c}">${c}</option>`
+    ).join("")}
+  `;
+}
+
+/* ---------------- THEME ---------------- */
+
+function initTheme() {
+  const t = localStorage.getItem("theme");
+
+  if (t === "dark") {
+    document.body.classList.add("dark");
   }
-);
+}
 
-/* -------------------- */
-/* DELETE */
-/* -------------------- */
+document.getElementById("themeToggle")
+  .onclick = () => {
+    document.body.classList.toggle("dark");
 
-deleteDocumentBtn.addEventListener(
-  "click",
-  async () => {
-
-    if (!selectedDocument) return;
-
-    const confirmed =
-      confirm(
-        "Supprimer ce document ?"
-      );
-
-    if (!confirmed) return;
-
-    await deleteDocument(
-      selectedDocument.id
+    localStorage.setItem(
+      "theme",
+      document.body.classList.contains("dark")
+        ? "dark"
+        : "light"
     );
+  };
 
-    modal.close();
+/* ---------------- SW ---------------- */
 
-    await loadDocuments();
-
+function registerSW() {
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("service-worker.js");
   }
-);
-
-/* -------------------- */
-/* HELPERS */
-/* -------------------- */
-
-function formatType(type) {
-
-  if (
-    type.includes("pdf")
-  ) {
-    return "📄 PDF";
-  }
-
-  if (
-    type.includes("image")
-  ) {
-    return "🖼 Image";
-  }
-
-  return type;
-
 }
 
-/* -------------------- */
-/* SERVICE WORKER */
-/* -------------------- */
+/* ---------------- MODAL CLOSE ---------------- */
 
-function registerServiceWorker() {
-
-  if (
-    "serviceWorker" in navigator
-  ) {
-
-    navigator.serviceWorker
-      .register(
-        "./service-worker.js"
-      )
-      .catch(console.error);
-
-  }
-
-}
+closeModal.onclick = () => modal.close();
