@@ -41,6 +41,8 @@ export function put(doc){
     tags: normalizeTags(doc.tags),
     relations: Array.isArray(doc.relations) ? doc.relations : [],
     blocks: Array.isArray(doc.blocks) ? doc.blocks : [],
+    deleted: Boolean(doc.deleted),
+    deletedAt: doc.deletedAt || null,
     dueDate: doc.dueDate || null,
     createdAt: doc.createdAt || now,
     updatedAt: now

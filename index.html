@@ -19,10 +19,14 @@
       </div>
 
       <nav class="nav-list">
-        <button class="nav active" data-view="all">📄 Documents</button>
+        <button class="nav active" data-view="all">🏠 Accueil</button>
+        <button class="nav" data-view="folders">📁 Dossiers</button>
+        <button class="nav" data-view="timeline">🕒 Timeline</button>
+        <button class="nav" data-view="recent">📝 Récents</button>
         <button class="nav" data-view="favorites">⭐ Favoris</button>
         <button class="nav" data-view="archives">📦 Archives</button>
         <button class="nav" data-view="due">📅 Échéances</button>
+        <button class="nav" data-view="trash">🗑 Corbeille</button>
       </nav>
 
       <section class="sidebar-panel">
@@ -121,7 +125,8 @@
     <menu class="modal-actions">
       <button id="save" type="button" class="primary">Sauvegarder</button>
       <button id="openFile" type="button">Ouvrir</button>
-      <button id="deleteDoc" type="button" class="danger">Supprimer</button>
+      <button id="restoreDoc" type="button" hidden>Restaurer</button>
+      <button id="deleteDoc" type="button" class="danger">Mettre à la corbeille</button>
     </menu>
   </dialog>
 

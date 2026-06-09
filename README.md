@@ -6,9 +6,13 @@ DocVault est une Progressive Web App offline-first servant de coffre documentair
 
 - Import de PDF, images et fichiers locaux sous forme de `Blob`.
 - Organisation par catégories, tags, favoris et archives.
-- Échéances avec dashboard des urgences à 14 jours.
+- Vue **Dossiers** pour parcourir les catégories comme de vrais dossiers structurés.
+- Vue **Timeline** regroupée par année et mois à partir de `createdAt`.
+- Vue **Documents récents** basée sur `updatedAt`.
+- Corbeille avec restauration possible et purge automatique après 30 jours.
+- Échéances avec dashboard actionnable des urgences à 14 jours.
 - Recherche globale 100% client-side sur titre, catégorie, tags, résumé, notes et blocs.
-- Relations entre documents pour créer des dossiers virtuels et une navigation Notion-like.
+- Relations entre documents et backlinks automatiques pour savoir quels documents mentionnent la fiche ouverte.
 - Éditeur léger block-based avec blocs texte, titre et todo.
 - Export/import JSON des métadonnées pour sauvegarde locale.
 - Service worker pour cache de l'application shell et usage hors ligne.
@@ -40,6 +44,8 @@ docvault/
   notes: "",
   favorite: false,
   archived: false,
+  deleted: false,
+  deletedAt: null,
   dueDate: null,
   relations: [],
   blocks: [],
@@ -53,6 +59,7 @@ docvault/
 - IndexedDB reste la source unique des données utilisateur.
 - Aucun backend ne doit être ajouté.
 - Le service worker ne stocke que l'application shell, jamais les données utilisateur.
+- La suppression passe par une corbeille locale avant purge définitive.
 - La recherche reste full client-side.
 - Les dépendances externes doivent être évitées pour préserver l'usage offline et la compatibilité iPad.
 
