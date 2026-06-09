@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,19 +12,52 @@
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-  <header class="topbar">
-    <h1>📁 DocVault</h1>
+<div class="app-layout">
 
-    <button id="themeToggle" class="icon-btn" title="Changer de thème">
-      🌙
-    </button>
-  </header>
+  <!-- SIDEBAR -->
 
-  <main class="container">
+  <aside class="sidebar">
 
-    <section class="toolbar">
+    <div class="logo">
+      📁 DocVault
+    </div>
+
+    <nav>
+
+      <button class="nav-btn active">
+        📄 Documents
+      </button>
+
+      <button class="nav-btn">
+        ⭐ Favoris
+      </button>
+
+      <button class="nav-btn">
+        📦 Archives
+      </button>
+
+    </nav>
+
+    <div class="sidebar-footer">
+
+      <button id="themeToggle" class="nav-btn">
+        🌙 Mode sombre
+      </button>
+
+    </div>
+
+  </aside>
+
+  <!-- MAIN -->
+
+  <main class="main-content">
+
+    <!-- HEADER -->
+
+    <header class="topbar">
 
       <input
         type="text"
@@ -32,61 +66,219 @@
       >
 
       <label class="upload-btn">
-        ➕ Ajouter un document
+        ➕ Ajouter
+
         <input
+          hidden
           type="file"
           id="fileInput"
           accept=".pdf,image/*"
-          hidden
         >
       </label>
 
+    </header>
+
+    <!-- DASHBOARD -->
+
+    <section class="dashboard">
+
+      <div class="stat-card">
+        <div class="stat-value" id="documentsCount">0</div>
+        <div class="stat-label">Documents</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-value" id="favoritesCount">0</div>
+        <div class="stat-label">Favoris</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-value" id="archivesCount">0</div>
+        <div class="stat-label">Archives</div>
+      </div>
+
     </section>
 
-    <section id="documentsList" class="documents-list">
+    <!-- FILTERS -->
+
+    <section class="filters">
+
+      <select id="categoryFilter">
+
+        <option value="">
+          Toutes les catégories
+        </option>
+
+      </select>
+
+      <button id="showFavorites">
+        ⭐ Favoris
+      </button>
+
+      <button id="showArchives">
+        📦 Archives
+      </button>
+
+    </section>
+
+    <!-- DOCUMENT LIST -->
+
+    <section
+      id="documentsList"
+      class="documents-list"
+    >
 
       <div class="empty-state">
-        <div class="empty-icon">📂</div>
-        <h2>Aucun document</h2>
-        <p>Ajoutez votre premier PDF ou image.</p>
+
+        <div class="empty-icon">
+          📂
+        </div>
+
+        <h2>
+          Aucun document
+        </h2>
+
+        <p>
+          Ajoutez votre premier document.
+        </p>
+
       </div>
 
     </section>
 
   </main>
 
-  <dialog id="documentModal">
+</div>
 
-    <div class="modal-header">
-      <h2 id="modalTitle">Document</h2>
+<!-- DOCUMENT EDITOR -->
 
-      <button id="closeModal" class="icon-btn">
-        ✕
+<dialog id="documentModal">
+
+  <div class="modal-header">
+
+    <h2 id="modalTitle">
+      Document
+    </h2>
+
+    <button
+      id="closeModal"
+      class="icon-btn"
+    >
+      ✕
+    </button>
+
+  </div>
+
+  <div class="modal-body">
+
+    <label>
+
+      Titre
+
+      <input
+        type="text"
+        id="editTitle"
+      >
+
+    </label>
+
+    <label>
+
+      Catégorie
+
+      <input
+        type="text"
+        id="editCategory"
+        placeholder="Administratif"
+      >
+
+    </label>
+
+    <label>
+
+      Tags
+
+      <input
+        type="text"
+        id="editTags"
+        placeholder="important, voiture"
+      >
+
+    </label>
+
+    <label>
+
+      Résumé
+
+      <textarea
+        id="editSummary"
+        rows="4"
+      ></textarea>
+
+    </label>
+
+    <label>
+
+      Notes
+
+      <textarea
+        id="editNotes"
+        rows="6"
+      ></textarea>
+
+    </label>
+
+    <div class="checkbox-row">
+
+      <label>
+
+        <input
+          type="checkbox"
+          id="editFavorite"
+        >
+
+        Favori
+
+      </label>
+
+      <label>
+
+        <input
+          type="checkbox"
+          id="editArchived"
+        >
+
+        Archivé
+
+      </label>
+
+    </div>
+
+    <div class="modal-actions">
+
+      <button id="saveDocumentBtn">
+        💾 Enregistrer
       </button>
-    </div>
 
-    <div class="modal-content">
+      <button id="openDocumentBtn">
+        📄 Ouvrir
+      </button>
 
-      <p id="modalType"></p>
-
-      <div class="modal-actions">
-
-        <button id="openDocumentBtn">
-          📄 Ouvrir
-        </button>
-
-        <button id="deleteDocumentBtn" class="danger">
-          🗑 Supprimer
-        </button>
-
-      </div>
+      <button
+        id="deleteDocumentBtn"
+        class="danger"
+      >
+        🗑 Supprimer
+      </button>
 
     </div>
 
-  </dialog>
+  </div>
 
-  <script src="db.js"></script>
-  <script src="app.js"></script>
+</dialog>
+
+<script src="db.js"></script>
+<script src="app.js"></script>
 
 </body>
 </html>
