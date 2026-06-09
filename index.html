@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>DocVault</title>
+
+  <meta name="theme-color" content="#2563eb">
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="topbar">
+    <h1>📁 DocVault</h1>
+
+    <button id="themeToggle" class="icon-btn" title="Changer de thème">
+      🌙
+    </button>
+  </header>
+
+  <main class="container">
+
+    <section class="toolbar">
+
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="🔍 Rechercher un document..."
+      >
+
+      <label class="upload-btn">
+        ➕ Ajouter un document
+        <input
+          type="file"
+          id="fileInput"
+          accept=".pdf,image/*"
+          hidden
+        >
+      </label>
+
+    </section>
+
+    <section id="documentsList" class="documents-list">
+
+      <div class="empty-state">
+        <div class="empty-icon">📂</div>
+        <h2>Aucun document</h2>
+        <p>Ajoutez votre premier PDF ou image.</p>
+      </div>
+
+    </section>
+
+  </main>
+
+  <dialog id="documentModal">
+
+    <div class="modal-header">
+      <h2 id="modalTitle">Document</h2>
+
+      <button id="closeModal" class="icon-btn">
+        ✕
+      </button>
+    </div>
+
+    <div class="modal-content">
+
+      <p id="modalType"></p>
+
+      <div class="modal-actions">
+
+        <button id="openDocumentBtn">
+          📄 Ouvrir
+        </button>
+
+        <button id="deleteDocumentBtn" class="danger">
+          🗑 Supprimer
+        </button>
+
+      </div>
+
+    </div>
+
+  </dialog>
+
+  <script src="db.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>
