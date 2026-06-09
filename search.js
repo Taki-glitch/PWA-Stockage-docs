@@ -1,19 +1,26 @@
-export function searchDocs(docs,q){
+export function searchDocs(docs,query){
+  const normalized = query.trim().toLowerCase();
 
-  q = q.toLowerCase();
+  if(!normalized){
+    return docs;
+  }
 
-  return docs.filter(d=>{
+  return docs.filter(doc=>matches(doc,normalized));
+}
 
-    const text = [
-      d.title,
-      d.category,
-      d.summary,
-      d.notes,
-      ...(d.tags||[])
-    ].join(" ").toLowerCase();
+export function matches(doc,query){
+  const blocksText = (doc.blocks || [])
+    .map(block=>block.content)
+    .join(" ");
 
-    return text.includes(q);
+  const text = [
+    doc.title,
+    doc.category,
+    doc.summary,
+    doc.notes,
+    blocksText,
+    ...(doc.tags || [])
+  ].join(" ").toLowerCase();
 
-  });
-
+  return text.includes(query.toLowerCase());
 }
