@@ -1,44 +1,43 @@
 :root {
-  --bg: #f4f6f9;
+
+  --bg: #f5f7fb;
   --card: #ffffff;
   --text: #1f2937;
   --text-light: #6b7280;
+
+  --border: #e5e7eb;
 
   --primary: #2563eb;
   --primary-hover: #1d4ed8;
 
   --danger: #dc2626;
 
-  --border: #e5e7eb;
-
   --shadow:
-    0 4px 10px rgba(0,0,0,0.08);
+    0 4px 10px rgba(0,0,0,.08);
+
 }
 
 body.dark {
+
   --bg: #111827;
   --card: #1f2937;
   --text: #f9fafb;
   --text-light: #9ca3af;
-
   --border: #374151;
 
-  --shadow:
-    0 4px 12px rgba(0,0,0,0.35);
 }
 
 * {
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 html,
 body {
-  height: 100%;
-}
 
-body {
+  height: 100%;
+
   font-family:
     -apple-system,
     BlinkMacSystemFont,
@@ -48,105 +47,227 @@ body {
   background: var(--bg);
   color: var(--text);
 
-  transition:
-    background .2s ease,
-    color .2s ease;
 }
 
-/* HEADER */
+/* LAYOUT */
 
-.topbar {
+.app-layout {
+
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  min-height: 100vh;
 
-  padding: 1rem 1.5rem;
+}
+
+/* SIDEBAR */
+
+.sidebar {
+
+  width: 260px;
 
   background: var(--card);
 
-  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
 
-  position: sticky;
-  top: 0;
+  display: flex;
+  flex-direction: column;
 
-  z-index: 10;
 }
 
-.topbar h1 {
+.logo {
+
   font-size: 1.4rem;
+  font-weight: 700;
+
+  padding: 1.5rem;
+
 }
 
-.icon-btn {
+.sidebar nav {
+
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+
+  padding: 1rem;
+
+}
+
+.nav-btn {
+
   border: none;
-  background: none;
+
+  background: transparent;
+
+  color: var(--text);
+
+  text-align: left;
+
+  padding: .9rem;
+
+  border-radius: 10px;
 
   cursor: pointer;
 
-  font-size: 1.2rem;
+}
+
+.nav-btn:hover,
+.nav-btn.active {
+
+  background: var(--bg);
+
+}
+
+.sidebar-footer {
+
+  margin-top: auto;
+  padding: 1rem;
+
 }
 
 /* MAIN */
 
-.container {
-  max-width: 1000px;
-  margin: auto;
+.main-content {
+
+  flex: 1;
 
   padding: 1rem;
+
 }
 
-/* TOOLBAR */
+/* TOPBAR */
 
-.toolbar {
+.topbar {
+
   display: flex;
   gap: 1rem;
-  flex-wrap: wrap;
 
   margin-bottom: 1rem;
+
 }
 
 #searchInput {
+
   flex: 1;
 
-  min-width: 250px;
-
-  padding: 12px 14px;
+  padding: .9rem;
 
   border-radius: 10px;
+
   border: 1px solid var(--border);
 
   background: var(--card);
+
   color: var(--text);
 
-  font-size: 1rem;
 }
 
 .upload-btn {
+
   background: var(--primary);
+
   color: white;
 
-  padding: 12px 18px;
-
   border-radius: 10px;
+
+  padding: .9rem 1.2rem;
 
   cursor: pointer;
 
   font-weight: 600;
 
-  transition: .2s;
 }
 
 .upload-btn:hover {
+
   background: var(--primary-hover);
+
+}
+
+/* DASHBOARD */
+
+.dashboard {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(auto-fit,minmax(180px,1fr));
+
+  gap: 1rem;
+
+  margin-bottom: 1rem;
+
+}
+
+.stat-card {
+
+  background: var(--card);
+
+  border: 1px solid var(--border);
+
+  border-radius: 12px;
+
+  padding: 1rem;
+
+  box-shadow: var(--shadow);
+
+}
+
+.stat-value {
+
+  font-size: 2rem;
+  font-weight: 700;
+
+}
+
+.stat-label {
+
+  color: var(--text-light);
+
+}
+
+/* FILTERS */
+
+.filters {
+
+  display: flex;
+
+  gap: .75rem;
+
+  flex-wrap: wrap;
+
+  margin-bottom: 1rem;
+
+}
+
+.filters select,
+.filters button {
+
+  border: 1px solid var(--border);
+
+  background: var(--card);
+
+  color: var(--text);
+
+  border-radius: 10px;
+
+  padding: .8rem;
+
+  cursor: pointer;
+
 }
 
 /* DOCUMENTS */
 
 .documents-list {
+
   display: grid;
+
   gap: 1rem;
+
 }
 
 .document-card {
+
   background: var(--card);
 
   border: 1px solid var(--border);
@@ -157,129 +278,234 @@ body {
 
   cursor: pointer;
 
-  transition: .2s;
-
   box-shadow: var(--shadow);
+
 }
 
 .document-card:hover {
+
   transform: translateY(-2px);
+
 }
 
 .document-title {
+
   font-weight: 700;
 
-  margin-bottom: .5rem;
+  margin-bottom: .4rem;
 
-  word-break: break-word;
 }
 
 .document-meta {
+
   color: var(--text-light);
 
   font-size: .9rem;
+
 }
 
-/* EMPTY STATE */
+.document-tags {
+
+  margin-top: .6rem;
+
+  display: flex;
+
+  gap: .4rem;
+
+  flex-wrap: wrap;
+
+}
+
+.tag {
+
+  background: var(--bg);
+
+  padding: .25rem .5rem;
+
+  border-radius: 20px;
+
+  font-size: .8rem;
+
+}
+
+/* EMPTY */
 
 .empty-state {
+
   text-align: center;
 
-  padding: 4rem 1rem;
+  padding: 4rem;
 
   color: var(--text-light);
+
 }
 
 .empty-icon {
+
   font-size: 4rem;
 
   margin-bottom: 1rem;
+
 }
 
 /* MODAL */
 
 dialog {
+
+  width: min(700px,95vw);
+
   border: none;
 
   border-radius: 16px;
-
-  width: min(500px, 90vw);
-
-  padding: 0;
 
   background: var(--card);
 
   color: var(--text);
 
-  box-shadow:
-    0 15px 40px rgba(0,0,0,.3);
 }
 
 dialog::backdrop {
+
   background:
     rgba(0,0,0,.45);
+
 }
 
 .modal-header {
+
   display: flex;
+
   justify-content: space-between;
+
   align-items: center;
 
   padding: 1rem;
 
   border-bottom: 1px solid var(--border);
+
 }
 
-.modal-content {
+.modal-body {
+
   padding: 1rem;
+
 }
 
-.modal-content p {
+.modal-body label {
+
+  display: block;
+
   margin-bottom: 1rem;
+
+}
+
+.modal-body input[type="text"],
+.modal-body textarea {
+
+  width: 100%;
+
+  margin-top: .3rem;
+
+  padding: .8rem;
+
+  border-radius: 10px;
+
+  border: 1px solid var(--border);
+
+  background: var(--bg);
+
+  color: var(--text);
+
+}
+
+.checkbox-row {
+
+  display: flex;
+
+  gap: 2rem;
+
+  margin-bottom: 1rem;
+
 }
 
 .modal-actions {
+
   display: flex;
+
   gap: .75rem;
+
+  flex-wrap: wrap;
+
 }
 
 .modal-actions button {
+
   border: none;
 
-  padding: 12px 16px;
+  padding: .9rem 1rem;
 
   border-radius: 10px;
 
   cursor: pointer;
 
-  font-weight: 600;
+}
+
+#saveDocumentBtn {
+
+  background: #16a34a;
+  color: white;
+
 }
 
 #openDocumentBtn {
+
   background: var(--primary);
   color: white;
+
 }
 
 .danger {
+
   background: var(--danger);
   color: white;
+
+}
+
+.icon-btn {
+
+  border: none;
+  background: transparent;
+
+  cursor: pointer;
+
+  font-size: 1.1rem;
+
 }
 
 /* MOBILE */
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
 
-  .toolbar {
+  .sidebar {
+
+    display: none;
+
+  }
+
+}
+
+@media (max-width: 700px) {
+
+  .topbar {
+
     flex-direction: column;
+
   }
 
   .upload-btn {
-    width: 100%;
-    text-align: center;
-  }
 
-  #searchInput {
-    width: 100%;
+    text-align: center;
+
   }
 
 }
