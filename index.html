@@ -2,85 +2,129 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#2563eb" />
   <title>DocVault</title>
 
-  <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
+  <div class="layout">
+    <aside class="sidebar" aria-label="Navigation principale">
+      <div>
+        <p class="eyebrow">Offline workspace</p>
+        <h1>📁 DocVault</h1>
+      </div>
 
-<div class="layout">
+      <nav class="nav-list">
+        <button class="nav active" data-view="all">📄 Documents</button>
+        <button class="nav" data-view="favorites">⭐ Favoris</button>
+        <button class="nav" data-view="archives">📦 Archives</button>
+        <button class="nav" data-view="due">📅 Échéances</button>
+      </nav>
 
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
+      <section class="sidebar-panel">
+        <h2>Collections</h2>
+        <div id="categoryList" class="chip-list"></div>
+      </section>
 
-    <h1>📁 DocVault</h1>
+      <section class="sidebar-panel">
+        <h2>Tags</h2>
+        <div id="tagList" class="chip-list"></div>
+      </section>
 
-    <button class="nav" data-view="all">📄 Documents</button>
-    <button class="nav" data-view="favorites">⭐ Favoris</button>
-    <button class="nav" data-view="archives">📦 Archives</button>
-    <button class="nav" data-view="due">📅 Échéances</button>
+      <div class="sidebar-actions">
+        <button id="themeToggle" type="button">🌙 Mode sombre</button>
+        <button id="exportBtn" type="button">📤 Export JSON</button>
+        <label class="button-like import">
+          📥 Import JSON
+          <input type="file" id="importInput" accept="application/json" hidden />
+        </label>
+      </div>
+    </aside>
 
-    <hr>
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Coffre documentaire privé</p>
+          <h2 id="viewTitle">Tous les documents</h2>
+        </div>
+        <label class="button-like primary">
+          + Importer fichiers
+          <input type="file" id="fileInput" multiple hidden />
+        </label>
+      </header>
 
-    <button id="themeToggle">🌙 Mode</button>
-    <button id="exportBtn">📤 Export</button>
-    <label class="import">
-      📥 Import
-      <input type="file" id="importInput" hidden>
-    </label>
+      <section class="search-row" aria-label="Recherche globale">
+        <input id="search" type="search" placeholder="Rechercher titre, catégorie, tags, notes, résumé..." autocomplete="off" />
+      </section>
 
-  </aside>
+      <section id="stats" class="stats-grid" aria-label="Dashboard"></section>
+      <section id="dueSoon" class="due-panel" aria-label="Échéances proches"></section>
+      <section id="list" class="document-grid" aria-live="polite"></section>
+    </main>
+  </div>
 
-  <!-- MAIN -->
-  <main class="main">
+  <dialog id="modal" class="document-modal">
+    <form method="dialog" class="modal-head">
+      <div>
+        <p class="eyebrow">Fiche document</p>
+        <h2 id="mTitle"></h2>
+      </div>
+      <button class="icon-button" value="cancel" aria-label="Fermer">✕</button>
+    </form>
 
-    <header>
-      <input id="search" placeholder="Rechercher...">
-      <input type="file" id="fileInput" multiple>
-    </header>
+    <div class="modal-body">
+      <section class="field-grid">
+        <label>Catégorie
+          <input id="mCategory" placeholder="Administratif" />
+        </label>
+        <label>Tags
+          <input id="mTags" placeholder="voiture, important" />
+        </label>
+        <label>Échéance
+          <input type="date" id="mDue" />
+        </label>
+        <div class="toggle-row">
+          <label>⭐ Favori <input type="checkbox" id="mFav" /></label>
+          <label>📦 Archive <input type="checkbox" id="mArch" /></label>
+        </div>
+      </section>
 
-    <section id="stats"></section>
+      <label>Résumé
+        <textarea id="mSummary" placeholder="Résumé court du document"></textarea>
+      </label>
 
-    <section id="list"></section>
+      <label>Notes classiques
+        <textarea id="mNotes" placeholder="Notes libres recherchables"></textarea>
+      </label>
 
-  </main>
+      <section class="block-editor">
+        <div class="section-title">
+          <h3>Éditeur Notion léger</h3>
+          <button id="addBlock" type="button">+ Bloc</button>
+        </div>
+        <div id="blocks"></div>
+      </section>
 
-</div>
+      <section>
+        <div class="section-title">
+          <h3>Relations</h3>
+          <span>Documents liés pour navigation graphe</span>
+        </div>
+        <div id="mLinks" class="relation-list"></div>
+      </section>
+    </div>
 
-<!-- MODAL -->
-<dialog id="modal">
+    <menu class="modal-actions">
+      <button id="save" type="button" class="primary">Sauvegarder</button>
+      <button id="openFile" type="button">Ouvrir</button>
+      <button id="deleteDoc" type="button" class="danger">Supprimer</button>
+    </menu>
+  </dialog>
 
-  <h2 id="mTitle"></h2>
-
-  <input id="mCategory" placeholder="Catégorie">
-  <input id="mTags" placeholder="tags (virgule)">
-  <textarea id="mSummary" placeholder="Résumé"></textarea>
-  <textarea id="mNotes" placeholder="Notes"></textarea>
-
-  <input type="date" id="mDue">
-
-  <label>
-    ⭐ Favori <input type="checkbox" id="mFav">
-  </label>
-
-  <label>
-    📦 Archive <input type="checkbox" id="mArch">
-  </label>
-
-  <div id="mLinks"></div>
-
-  <button id="save">Sauvegarder</button>
-  <button id="open">Ouvrir</button>
-  <button id="delete">Supprimer</button>
-
-</dialog>
-
-<script src="db.js"></script>
-<script src="search.js"></script>
-<script src="app.js"></script>
-
+  <script type="module" src="app.js"></script>
 </body>
 </html>
