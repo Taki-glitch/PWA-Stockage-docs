@@ -324,24 +324,50 @@ function renderRelations(){
   const candidates = activeDocuments().filter(doc=>doc.id !== state.current.id);
   const backlinks = backlinksFor(state.current.id);
   const relationIds = new Set(state.current.relations || []);
+  const selectedCount = candidates.filter(doc=>relationIds.has(doc.id)).length;
 
   els.mLinks.innerHTML = `
-    <div class="backlink-box">
-      <strong>Mentionné par</strong>
-      ${backlinks.length ? backlinks.map(doc=>`<button type="button" class="link-button backlink" data-id="${doc.id}">← ${escapeHtml(doc.title)}</button>`).join("") : "<p>Aucun backlink automatique.</p>"}
+    <div class="backlink-box relation-panel">
+      <div class="relation-panel-head">
+        <strong>Mentionné par</strong>
+        <span>${backlinks.length} backlink${backlinks.length > 1 ? "s" : ""}</span>
+      </div>
+      <div class="backlink-list">
+        ${backlinks.length ? backlinks.map(doc=>`<button type="button" class="link-button backlink" data-id="${doc.id}">← ${escapeHtml(doc.title)}</button>`).join("") : "<p>Aucun backlink automatique.</p>"}
+      </div>
     </div>
-    <div class="relation-picker">
-      ${candidates.length ? candidates.map(doc=>`
-        <label class="relation-item">
-          <input type="checkbox" value="${doc.id}" ${relationIds.has(doc.id) ? "checked" : ""} />
-          <span>${escapeHtml(doc.title)}</span>
-        </label>
-      `).join("") : "<p>Aucun autre document à lier.</p>"}
+    <div class="relation-panel relation-picker-shell">
+      <div class="relation-panel-head">
+        <div>
+          <strong>Documents associés</strong>
+          <span>${selectedCount} sélectionné${selectedCount > 1 ? "s" : ""} sur ${candidates.length}</span>
+        </div>
+        <input class="relation-search" type="search" placeholder="Filtrer les documents..." aria-label="Filtrer les documents associés" />
+      </div>
+      <div class="relation-picker" role="list">
+        ${candidates.length ? candidates.map(doc=>`
+          <label class="relation-item" role="listitem" data-title="${escapeHtml(doc.title.toLowerCase())}">
+            <input type="checkbox" value="${doc.id}" ${relationIds.has(doc.id) ? "checked" : ""} />
+            <span>
+              <strong>${escapeHtml(doc.title)}</strong>
+              <small>${escapeHtml(doc.category || "Sans catégorie")}</small>
+            </span>
+          </label>
+        `).join("") : "<p>Aucun autre document à lier.</p>"}
+      </div>
     </div>
   `;
 
   els.mLinks.querySelectorAll(".backlink").forEach(button=>{
     button.addEventListener("click",()=>openDoc(state.docs.find(doc=>doc.id === button.dataset.id)));
+  });
+
+  const relationSearch = els.mLinks.querySelector(".relation-search");
+  relationSearch?.addEventListener("input",()=>{
+    const query = relationSearch.value.trim().toLowerCase();
+    els.mLinks.querySelectorAll(".relation-item").forEach(item=>{
+      item.hidden = query && !item.dataset.title.includes(query);
+    });
   });
 }
 
